@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.opengl.GLES20;
 import android.opengl.GLUtils;
+import android.opengl.Matrix;
 import android.util.Log;
 
 import java.nio.ByteBuffer;
@@ -25,10 +26,10 @@ public class WlTextureRender implements WLEGLSurfaceView.WlGLRender {
     private FloatBuffer vertexBuffer;
 
     private float[] fragmentData = {
-//            0f, 1f,
-//            1f, 1f,
-//            0f, 0f,
-//            1f, 0f
+            0f, 1f,
+            1f, 1f,
+            0f, 0f,
+            1f, 0f
 
 //            0f, 0.5f,
 //            0.5f, 0.5f,
@@ -36,10 +37,10 @@ public class WlTextureRender implements WLEGLSurfaceView.WlGLRender {
 //            0.5f, 0f
 
             //图片修正
-            0f, 0f,
-            1f, 0f,
-            0f, 1f,
-            1f, 1f
+//            0f, 0f,
+//            1f, 0f,
+//            0f, 1f,
+//            1f, 1f
     };
     private FloatBuffer fragmentBuffer;
 
@@ -57,6 +58,9 @@ public class WlTextureRender implements WLEGLSurfaceView.WlGLRender {
     private int imgTexruteId;
 
     private FboRender fboRender;
+
+    private int umatrix;
+    private float[] matrix=new float[16];
 
 
     public WlTextureRender(Context context) {
@@ -81,7 +85,7 @@ public class WlTextureRender implements WLEGLSurfaceView.WlGLRender {
     public void onSurfaceCreated() {
 
         fboRender.onCreate();
-        String vertexSource = WlShaderUtil.getRawResource(context, R.raw.vertex_shader);
+        String vertexSource = WlShaderUtil.getRawResource(context, R.raw.vertex_shader_m);
         String fragmentSource = WlShaderUtil.getRawResource(context, R.raw.fragment_shader);
 
         program = WlShaderUtil.createProgram(vertexSource, fragmentSource);
@@ -89,6 +93,7 @@ public class WlTextureRender implements WLEGLSurfaceView.WlGLRender {
         vPosition = GLES20.glGetAttribLocation(program, "v_Position");
         fPosition = GLES20.glGetAttribLocation(program, "f_Position");
         sampler = GLES20.glGetUniformLocation(program, "sTexture");
+        umatrix = GLES20.glGetUniformLocation(program, "u_Matrix");
 
         //创建vbo
         int[] vbos = new int[1];
@@ -127,7 +132,7 @@ public class WlTextureRender implements WLEGLSurfaceView.WlGLRender {
         GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
 
         //生成纹理
-        GLES20.glTexImage2D(GLES20.GL_TEXTURE_2D, 0, GLES20.GL_RGBA, 1080, 1920, 0, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, null);
+        GLES20.glTexImage2D(GLES20.GL_TEXTURE_2D, 0, GLES20.GL_RGBA, 720, 1080, 0, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, null);
         //        把纹理绑定到FBO
         GLES20.glFramebufferTexture2D(GLES20.GL_FRAMEBUFFER, GLES20.GL_COLOR_ATTACHMENT0, GLES20.GL_TEXTURE_2D, textureid, 0);
 
@@ -152,17 +157,30 @@ public class WlTextureRender implements WLEGLSurfaceView.WlGLRender {
     public void onSurfaceChanged(int width, int height) {
         GLES20.glViewport(0, 0, width, height);
         fboRender.onChange(width, height);
+
+        if(width > height)
+        {
+            Matrix.orthoM(matrix, 0, -width / ((height / 702f) * 526f),  width / ((height / 702f) * 526f), -1f, 1f, -1f, 1f);
+        }
+        else
+        {
+            Matrix.orthoM(matrix, 0, -1,  1, -height / ((width / 526f) * 702f), height / ((width / 526f) * 702f), -1f, 1f);
+        }
     }
 
     @Override
     public void onDrawFrame() {
 
-        GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, fboId);
+        GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
 
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
         GLES20.glClearColor(1f, 0f, 0f, 1f);
 
         GLES20.glUseProgram(program);
+
+        //使用矩阵
+        GLES20.glUniformMatrix4fv(umatrix, 1, false, matrix, 0);
+
 
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, imgTexruteId);
 
@@ -184,8 +202,8 @@ public class WlTextureRender implements WLEGLSurfaceView.WlGLRender {
         GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
 
         //绘制到窗口
-        GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
-        fboRender.onDraw(textureid);
+//        GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
+//        fboRender.onDraw(textureid);
 
 
     }

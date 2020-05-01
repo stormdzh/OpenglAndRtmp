@@ -15,7 +15,7 @@ public class WlGlSurfaceView extends WLEGLSurfaceView{
 
     public WlGlSurfaceView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        setRender(new WlRender());
+        setRender(new WlTextureRender(context));
         setRenderMode(WLEGLSurfaceView.RENDERMODE_WHEN_DIRTY);
     }
 }

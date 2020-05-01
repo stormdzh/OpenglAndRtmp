@@ -26,10 +26,10 @@ public class WlTextureRender implements WLEGLSurfaceView.WlGLRender {
     private FloatBuffer vertexBuffer;
 
     private float[] fragmentData = {
-//            0f, 1f,
-//            1f, 1f,
-//            0f, 0f,
-//            1f, 0f
+            0f, 1f,
+            1f, 1f,
+            0f, 0f,
+            1f, 0f
 
 //            0f, 0.5f,
 //            0.5f, 0.5f,
@@ -37,10 +37,10 @@ public class WlTextureRender implements WLEGLSurfaceView.WlGLRender {
 //            0.5f, 0f
 
             //图片修正
-            0f, 0f,
-            1f, 0f,
-            0f, 1f,
-            1f, 1f
+//            0f, 0f,
+//            1f, 0f,
+//            0f, 1f,
+//            1f, 1f
     };
     private FloatBuffer fragmentBuffer;
 
@@ -166,6 +166,11 @@ public class WlTextureRender implements WLEGLSurfaceView.WlGLRender {
         {
             Matrix.orthoM(matrix, 0, -1,  1, -height / ((width / 526f) * 702f), height / ((width / 526f) * 702f), -1f, 1f);
         }
+
+        //x轴旋转180度 -旋转矩阵
+        Matrix.rotateM(matrix,0,180,1,0,0);
+        //下面代码是为了测试 水平反正
+        Matrix.rotateM(matrix,0,180,0,1,0);
     }
 
     @Override

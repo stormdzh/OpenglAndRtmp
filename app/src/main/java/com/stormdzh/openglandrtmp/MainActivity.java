@@ -1,9 +1,11 @@
 package com.stormdzh.openglandrtmp;
 
+import android.content.Intent;
 import android.opengl.GLES20;
 import android.os.Bundle;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -19,6 +21,18 @@ public class MainActivity extends AppCompatActivity {
 
 
         initSurfaceView();
+
+        initTest();
+    }
+
+    private void initTest() {
+        findViewById(R.id.toEglSurface).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(MainActivity.this,EglSurfaceActivity.class));
+            }
+        });
+
     }
 
     private int count=0;

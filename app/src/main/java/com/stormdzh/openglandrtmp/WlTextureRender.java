@@ -26,10 +26,10 @@ public class WlTextureRender implements WLEGLSurfaceView.WlGLRender {
     private FloatBuffer vertexBuffer;
 
     private float[] fragmentData = {
-            0f, 1f,
-            1f, 1f,
-            0f, 0f,
-            1f, 0f
+//            0f, 1f,
+//            1f, 1f,
+//            0f, 0f,
+//            1f, 0f
 
 //            0f, 0.5f,
 //            0.5f, 0.5f,
@@ -37,10 +37,10 @@ public class WlTextureRender implements WLEGLSurfaceView.WlGLRender {
 //            0.5f, 0f
 
             //图片修正
-//            0f, 0f,
-//            1f, 0f,
-//            0f, 1f,
-//            1f, 1f
+            0f, 0f,
+            1f, 0f,
+            0f, 1f,
+            1f, 1f
     };
     private FloatBuffer fragmentBuffer;
 
@@ -132,7 +132,7 @@ public class WlTextureRender implements WLEGLSurfaceView.WlGLRender {
         GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
 
         //生成纹理
-        GLES20.glTexImage2D(GLES20.GL_TEXTURE_2D, 0, GLES20.GL_RGBA, 720, 1080, 0, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, null);
+        GLES20.glTexImage2D(GLES20.GL_TEXTURE_2D, 0, GLES20.GL_RGBA, 1080, 1920, 0, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, null);
         //        把纹理绑定到FBO
         GLES20.glFramebufferTexture2D(GLES20.GL_FRAMEBUFFER, GLES20.GL_COLOR_ATTACHMENT0, GLES20.GL_TEXTURE_2D, textureid, 0);
 
@@ -171,7 +171,7 @@ public class WlTextureRender implements WLEGLSurfaceView.WlGLRender {
     @Override
     public void onDrawFrame() {
 
-        GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
+        GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, fboId);
 
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
         GLES20.glClearColor(1f, 0f, 0f, 1f);
@@ -202,8 +202,8 @@ public class WlTextureRender implements WLEGLSurfaceView.WlGLRender {
         GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
 
         //绘制到窗口
-//        GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
-//        fboRender.onDraw(textureid);
+        GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
+        fboRender.onDraw(textureid);
 
 
     }

@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.opengl.GLES20;
 import android.opengl.GLUtils;
+import android.util.Log;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -44,6 +45,12 @@ public class WlTextureRender implements WLEGLSurfaceView.WlGLRender {
 
     //使用vbo
     private int vboId;
+    //fbo
+    private int fboId;
+
+    private int imgTexruteId;
+
+    private FboRender fboRender;
 
 
     public WlTextureRender(Context context) {
@@ -60,11 +67,14 @@ public class WlTextureRender implements WLEGLSurfaceView.WlGLRender {
                 .put(fragmentData);
         fragmentBuffer.position(0);
 
+        fboRender=new FboRender(context);
+
     }
 
     @Override
     public void onSurfaceCreated() {
 
+        fboRender.onCreate();
         String vertexSource = WlShaderUtil.getRawResource(context, R.raw.vertex_shader);
         String fragmentSource = WlShaderUtil.getRawResource(context, R.raw.fragment_shader);
 
@@ -88,6 +98,13 @@ public class WlTextureRender implements WLEGLSurfaceView.WlGLRender {
         GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
 
 
+        //生成fbo
+        int [] fbos=new int[1];
+        GLES20.glGenBuffers(1,fbos,0);
+        fboId=fbos[0];
+        GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER,fboId);
+
+
         int[] textureIds = new int[1];
         GLES20.glGenTextures(1, textureIds, 0);
         textureid = textureIds[0];
@@ -103,28 +120,45 @@ public class WlTextureRender implements WLEGLSurfaceView.WlGLRender {
         GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR);
         GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
 
-        Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.androids);
-        GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bitmap, 0);
+        //生成纹理
+        GLES20.glTexImage2D(GLES20.GL_TEXTURE_2D, 0, GLES20.GL_RGBA, 1080, 1920, 0, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, null);
+        //        把纹理绑定到FBO
+        GLES20.glFramebufferTexture2D(GLES20.GL_FRAMEBUFFER, GLES20.GL_COLOR_ATTACHMENT0, GLES20.GL_TEXTURE_2D, textureid, 0);
 
-        bitmap.recycle();
-        bitmap = null;
+//        检查FBO绑定是否成功
+        if(GLES20.glCheckFramebufferStatus(GLES20.GL_FRAMEBUFFER) != GLES20.GL_FRAMEBUFFER_COMPLETE){
+            Log.i("dzh","绑定成功");
+        }else{
+            Log.i("dzh","绑定失败");
+        }
+
+//        Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.androids);
+//        GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bitmap, 0);
+//
+//        bitmap.recycle();
+//        bitmap = null;
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
+        GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
+        imgTexruteId=loadTexrute(R.drawable.androids);
     }
 
     @Override
     public void onSurfaceChanged(int width, int height) {
         GLES20.glViewport(0, 0, width, height);
+        fboRender.onChange(width,height);
     }
 
     @Override
     public void onDrawFrame() {
+
+        GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER,fboId);
 
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
         GLES20.glClearColor(1f, 0f, 0f, 1f);
 
         GLES20.glUseProgram(program);
 
-        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureid);
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, imgTexruteId);
 
         //绑定vbo
         GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, vboId);
@@ -142,6 +176,30 @@ public class WlTextureRender implements WLEGLSurfaceView.WlGLRender {
 
         //解绑vbo
         GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
+
+        //绘制到窗口
+        GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
+        fboRender.onDraw(textureid);
+
+
+    }
+
+    private int loadTexrute(int src)
+    {
+        int []textureIds = new int[1];
+        GLES20.glGenTextures(1, textureIds, 0);
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureIds[0]);
+
+        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_REPEAT);
+        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_REPEAT);
+        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR);
+        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
+
+        Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), src);
+        GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bitmap, 0);
+
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
+        return  textureIds[0];
 
     }
 }

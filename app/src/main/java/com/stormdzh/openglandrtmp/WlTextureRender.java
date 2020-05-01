@@ -42,6 +42,9 @@ public class WlTextureRender implements WLEGLSurfaceView.WlGLRender {
     private int textureid;
     private int sampler;
 
+    //使用vbo
+    private int vboId;
+
 
     public WlTextureRender(Context context) {
         this.context = context;
@@ -70,6 +73,19 @@ public class WlTextureRender implements WLEGLSurfaceView.WlGLRender {
         vPosition = GLES20.glGetAttribLocation(program, "v_Position");
         fPosition = GLES20.glGetAttribLocation(program, "f_Position");
         sampler = GLES20.glGetUniformLocation(program, "sTexture");
+
+        //创建vbo
+        int[] vbos = new int[1];
+        GLES20.glGenBuffers(1, vbos, 0);
+        vboId = vbos[0];
+        //绑定vbo
+        GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, vboId);
+        //设置数据
+        GLES20.glBufferData(GLES20.GL_ARRAY_BUFFER, vertexData.length * 4 + fragmentData.length * 4, null, GLES20.GL_STATIC_DRAW);
+        GLES20.glBufferSubData(GLES20.GL_ARRAY_BUFFER, 0, vertexData.length * 4, vertexBuffer);
+        GLES20.glBufferSubData(GLES20.GL_ARRAY_BUFFER, vertexData.length * 4, fragmentData.length * 4, fragmentBuffer);
+        //解绑
+        GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
 
 
         int[] textureIds = new int[1];
@@ -109,16 +125,23 @@ public class WlTextureRender implements WLEGLSurfaceView.WlGLRender {
         GLES20.glUseProgram(program);
 
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureid);
+
+        //绑定vbo
+        GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, vboId);
+
         GLES20.glEnableVertexAttribArray(vPosition);
         GLES20.glVertexAttribPointer(vPosition, 2, GLES20.GL_FLOAT, false, 8,
-                vertexBuffer);
+                0);
 
         GLES20.glEnableVertexAttribArray(fPosition);
         GLES20.glVertexAttribPointer(fPosition, 2, GLES20.GL_FLOAT, false, 8,
-                fragmentBuffer);
+                vertexData.length * 4);
 
         GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4);
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
+
+        //解绑vbo
+        GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
 
     }
 }

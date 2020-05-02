@@ -21,15 +21,20 @@ public class WlTextureRender implements WLEGLSurfaceView.WlGLRender {
             -1f, -1f,
             1f, -1f,
             -1f, 1f,
-            1f, 1f
+            1f, 1f,
+
+            -0.5f, -0.5f,
+            0.5f, -0.5f,
+            -0.5f, 0.5f,
+            0.5f, 0.5f
     };
     private FloatBuffer vertexBuffer;
 
     private float[] fragmentData = {
-            0f, 1f,
-            1f, 1f,
-            0f, 0f,
-            1f, 0f
+//            0f, 1f,
+//            1f, 1f,
+//            0f, 0f,
+//            1f, 0f
 
 //            0f, 0.5f,
 //            0.5f, 0.5f,
@@ -37,10 +42,10 @@ public class WlTextureRender implements WLEGLSurfaceView.WlGLRender {
 //            0.5f, 0f
 
             //图片修正
-//            0f, 0f,
-//            1f, 0f,
-//            0f, 1f,
-//            1f, 1f
+            0f, 0f,
+            1f, 0f,
+            0f, 1f,
+            1f, 1f
     };
     private FloatBuffer fragmentBuffer;
 
@@ -56,6 +61,7 @@ public class WlTextureRender implements WLEGLSurfaceView.WlGLRender {
     private int fboId;
 
     private int imgTexruteId;
+    private int imgTexruteId2;
 
     private FboRender fboRender;
 
@@ -154,6 +160,7 @@ public class WlTextureRender implements WLEGLSurfaceView.WlGLRender {
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
         GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
         imgTexruteId = loadTexrute(R.drawable.androids);
+        imgTexruteId2 = loadTexrute(R.drawable.ghnl);
         if(mOnTextureListener!=null){
             mOnTextureListener.onRenderCreate(textureid);
         }
@@ -177,9 +184,9 @@ public class WlTextureRender implements WLEGLSurfaceView.WlGLRender {
         }
 
         //x轴旋转180度 -旋转矩阵
-        Matrix.rotateM(matrix,0,180,1,0,0);
+//        Matrix.rotateM(matrix,0,180,1,0,0);
         //下面代码是为了测试 水平反正
-        Matrix.rotateM(matrix,0,180,0,1,0);
+//        Matrix.rotateM(matrix,0,180,0,1,0);
     }
 
     @Override
@@ -197,11 +204,10 @@ public class WlTextureRender implements WLEGLSurfaceView.WlGLRender {
         //使用矩阵
         GLES20.glUniformMatrix4fv(umatrix, 1, false, matrix, 0);
 
-
-        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, imgTexruteId);
-
         //绑定vbo
         GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, vboId);
+
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, imgTexruteId);
 
         GLES20.glEnableVertexAttribArray(vPosition);
         GLES20.glVertexAttribPointer(vPosition, 2, GLES20.GL_FLOAT, false, 8,
@@ -210,11 +216,16 @@ public class WlTextureRender implements WLEGLSurfaceView.WlGLRender {
         GLES20.glEnableVertexAttribArray(fPosition);
         GLES20.glVertexAttribPointer(fPosition, 2, GLES20.GL_FLOAT, false, 8,
                 vertexData.length * 4);
-
-
         GLES20.glViewport(0, 0, width, height);
 
         GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4);
+
+        drawFrameTwo();
+
+
+
+
+
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
 
         //解绑vbo
@@ -225,6 +236,22 @@ public class WlTextureRender implements WLEGLSurfaceView.WlGLRender {
         fboRender.onDraw(textureid);
 
 
+    }
+
+    private void drawFrameTwo() {
+
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, imgTexruteId2);
+
+        GLES20.glEnableVertexAttribArray(vPosition);
+        GLES20.glVertexAttribPointer(vPosition, 2, GLES20.GL_FLOAT, false, 8,
+                32);
+
+        GLES20.glEnableVertexAttribArray(fPosition);
+        GLES20.glVertexAttribPointer(fPosition, 2, GLES20.GL_FLOAT, false, 8,
+                vertexData.length * 4);
+        GLES20.glViewport(0, 0, width, height);
+
+        GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4);
     }
 
     private int loadTexrute(int src) {

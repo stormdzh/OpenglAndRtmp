@@ -5,6 +5,12 @@ import android.util.AttributeSet;
 
 public class WlGlSurfaceView extends WLEGLSurfaceView{
 
+    public WlTextureRender getmTextureRender() {
+        return mTextureRender;
+    }
+
+    private WlTextureRender mTextureRender;
+
     public WlGlSurfaceView(Context context) {
         this(context, null);
     }
@@ -15,7 +21,10 @@ public class WlGlSurfaceView extends WLEGLSurfaceView{
 
     public WlGlSurfaceView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        setRender(new WlTextureRender(context));
+        mTextureRender=new WlTextureRender(context);
+        setRender(mTextureRender);
         setRenderMode(WLEGLSurfaceView.RENDERMODE_WHEN_DIRTY);
     }
+
+
 }

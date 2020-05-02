@@ -62,6 +62,9 @@ public class WlTextureRender implements WLEGLSurfaceView.WlGLRender {
     private int umatrix;
     private float[] matrix=new float[16];
 
+    private int width;
+    private int height;
+
 
     public WlTextureRender(Context context) {
         this.context = context;
@@ -151,13 +154,19 @@ public class WlTextureRender implements WLEGLSurfaceView.WlGLRender {
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
         GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
         imgTexruteId = loadTexrute(R.drawable.androids);
+        if(mOnTextureListener!=null){
+            mOnTextureListener.onRenderCreate(textureid);
+        }
     }
 
     @Override
     public void onSurfaceChanged(int width, int height) {
-        GLES20.glViewport(0, 0, width, height);
-        fboRender.onChange(width, height);
-
+//        GLES20.glViewport(0, 0, width, height);
+//        fboRender.onChange(width, height);
+        this.width=width;
+        this.height=height;
+        width=1080;
+        height=1920;
         if(width > height)
         {
             Matrix.orthoM(matrix, 0, -width / ((height / 702f) * 526f),  width / ((height / 702f) * 526f), -1f, 1f, -1f, 1f);
@@ -175,6 +184,8 @@ public class WlTextureRender implements WLEGLSurfaceView.WlGLRender {
 
     @Override
     public void onDrawFrame() {
+
+        GLES20.glViewport(0, 0, 1080, 1920);
 
         GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, fboId);
 
@@ -199,6 +210,9 @@ public class WlTextureRender implements WLEGLSurfaceView.WlGLRender {
         GLES20.glEnableVertexAttribArray(fPosition);
         GLES20.glVertexAttribPointer(fPosition, 2, GLES20.GL_FLOAT, false, 8,
                 vertexData.length * 4);
+
+
+        GLES20.glViewport(0, 0, width, height);
 
         GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4);
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
@@ -229,5 +243,15 @@ public class WlTextureRender implements WLEGLSurfaceView.WlGLRender {
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
         return textureIds[0];
 
+    }
+
+    public interface OnTextureListener{
+
+        void onRenderCreate(int textureid);
+    }
+
+    public OnTextureListener mOnTextureListener;
+    public void setOnTextureListener(OnTextureListener listener){
+        this.mOnTextureListener=listener;
     }
 }

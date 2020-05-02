@@ -32,6 +32,12 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(new Intent(MainActivity.this,EglSurfaceActivity.class));
             }
         });
+        findViewById(R.id.toCamera).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(MainActivity.this,CameraActivity.class));
+            }
+        });
 
     }
 

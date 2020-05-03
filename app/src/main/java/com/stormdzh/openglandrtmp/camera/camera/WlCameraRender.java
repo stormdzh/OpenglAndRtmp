@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.SurfaceTexture;
 import android.opengl.GLES11Ext;
 import android.opengl.GLES20;
+import android.opengl.Matrix;
 import android.util.Log;
 
 import com.stormdzh.openglandrtmp.R;
@@ -48,6 +49,10 @@ public class WlCameraRender implements WLEGLSurfaceView.WlGLRender,SurfaceTextur
     private int fboTextureid;
     private int cameraTextureid;
 
+
+    private int umatrix;
+    private float[] matrix =new float[16];
+
     private SurfaceTexture surfaceTexture;
     private OnSurfaceCreateListener onSurfaceCreateListener;
 
@@ -69,7 +74,8 @@ public class WlCameraRender implements WLEGLSurfaceView.WlGLRender,SurfaceTextur
                 .put(fragmentData);
         fragmentBuffer.position(0);
 
-
+        //初始化矩阵
+        Matrix.setIdentityM(matrix,0);
     }
 
     public void setOnSurfaceCreateListener(OnSurfaceCreateListener onSurfaceCreateListener) {
@@ -80,12 +86,13 @@ public class WlCameraRender implements WLEGLSurfaceView.WlGLRender,SurfaceTextur
     public void onSurfaceCreated() {
 
         wlCameraFboRender.onCreate();
-        String vertexSource = WlShaderUtil.getRawResource(context, R.raw.vertex_camera_shader);
+        String vertexSource = WlShaderUtil.getRawResource(context, R.raw.vertex_shader_screen);
         String fragmentSource = WlShaderUtil.getRawResource(context, R.raw.fragment_camera_shader);
 
         program = WlShaderUtil.createProgram(vertexSource, fragmentSource);
         vPosition = GLES20.glGetAttribLocation(program, "v_Position");
         fPosition = GLES20.glGetAttribLocation(program, "f_Position");
+        umatrix = GLES20.glGetUniformLocation(program, "u_Matrix");
 
         //vbo
         int [] vbos = new int[1];
@@ -153,6 +160,8 @@ public class WlCameraRender implements WLEGLSurfaceView.WlGLRender,SurfaceTextur
     public void onSurfaceChanged(int width, int height) {
         wlCameraFboRender.onChange(width, height);
         GLES20.glViewport(0, 0, width, height);
+        Matrix.rotateM(matrix,0,-90,0,0,1);
+        Matrix.rotateM(matrix,0,180,0,1,0);
     }
 
     @Override
@@ -163,8 +172,11 @@ public class WlCameraRender implements WLEGLSurfaceView.WlGLRender,SurfaceTextur
         GLES20.glClearColor(1f,0f, 0f, 1f);
 
         GLES20.glUseProgram(program);
+
         GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, fboId);
         GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, vboId);
+
+        GLES20.glUniformMatrix4fv(umatrix,1,false,matrix,0);
 
         GLES20.glEnableVertexAttribArray(vPosition);
         GLES20.glVertexAttribPointer(vPosition, 2, GLES20.GL_FLOAT, false, 8,

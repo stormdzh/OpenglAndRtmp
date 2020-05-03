@@ -10,6 +10,7 @@ import android.util.Log;
 import com.stormdzh.openglandrtmp.R;
 import com.stormdzh.openglandrtmp.WlShaderUtil;
 import com.stormdzh.openglandrtmp.camera.egl.WLEGLSurfaceView;
+import com.stormdzh.openglandrtmp.camera.util.DisplayUtil;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -59,6 +60,13 @@ public class WlCameraRender implements WLEGLSurfaceView.WlGLRender,SurfaceTextur
     private WlCameraFboRender wlCameraFboRender;
 
 
+    private int screenWidth;
+    private int screenHeight;
+
+    private int width;
+    private int height;
+
+
     public WlCameraRender(Context context) {
         this.context = context;
         wlCameraFboRender = new WlCameraFboRender(context);
@@ -76,6 +84,9 @@ public class WlCameraRender implements WLEGLSurfaceView.WlGLRender,SurfaceTextur
 
         //初始化矩阵
         Matrix.setIdentityM(matrix,0);
+
+        screenWidth= DisplayUtil.getScreenWidth(context);
+        screenHeight= DisplayUtil.getScreenHeight(context);
     }
 
     public void setOnSurfaceCreateListener(OnSurfaceCreateListener onSurfaceCreateListener) {
@@ -122,7 +133,7 @@ public class WlCameraRender implements WLEGLSurfaceView.WlGLRender,SurfaceTextur
         GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR);
         GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
 
-        GLES20.glTexImage2D(GLES20.GL_TEXTURE_2D, 0, GLES20.GL_RGBA, 720, 1280, 0, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, null);
+        GLES20.glTexImage2D(GLES20.GL_TEXTURE_2D, 0, GLES20.GL_RGBA, screenWidth, screenHeight, 0, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, null);
         GLES20.glFramebufferTexture2D(GLES20.GL_FRAMEBUFFER, GLES20.GL_COLOR_ATTACHMENT0, GLES20.GL_TEXTURE_2D, fboTextureid, 0);
         if(GLES20.glCheckFramebufferStatus(GLES20.GL_FRAMEBUFFER) != GLES20.GL_FRAMEBUFFER_COMPLETE)
         {
@@ -156,17 +167,32 @@ public class WlCameraRender implements WLEGLSurfaceView.WlGLRender,SurfaceTextur
         GLES20.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, 0);
     }
 
+
+    public void resetMatrix(){
+        //初始化矩阵
+        Matrix.setIdentityM(matrix,0);
+    }
+
+    //设置角度
+    public void setAngle(float angle,float x,float y,float z){
+        Matrix.rotateM(matrix,0,angle,x,y,z);
+    }
+
     @Override
     public void onSurfaceChanged(int width, int height) {
-        wlCameraFboRender.onChange(width, height);
-        GLES20.glViewport(0, 0, width, height);
-        Matrix.rotateM(matrix,0,-90,0,0,1);
-        Matrix.rotateM(matrix,0,180,0,1,0);
+//        wlCameraFboRender.onChange(width, height);
+//        GLES20.glViewport(0, 0, width, height);
+//        Matrix.rotateM(matrix,0,-90,0,0,1);
+//        Matrix.rotateM(matrix,0,180,0,1,0);
+
+        this.width=width;
+        this.height=height;
     }
 
     @Override
     public void onDrawFrame() {
 
+        GLES20.glViewport(0, 0, screenWidth, screenHeight);
         surfaceTexture.updateTexImage();
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
         GLES20.glClearColor(1f,0f, 0f, 1f);
@@ -191,6 +217,10 @@ public class WlCameraRender implements WLEGLSurfaceView.WlGLRender,SurfaceTextur
         GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
 
         GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
+
+        //绘制fbo
+        wlCameraFboRender.onChange(width, height);
+
         wlCameraFboRender.onDraw(fboTextureid);
 
 

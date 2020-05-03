@@ -1,9 +1,11 @@
 package com.stormdzh.openglandrtmp.camera;
 
 import android.app.Activity;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.stormdzh.openglandrtmp.R;
@@ -44,5 +46,12 @@ public class CameraActivity extends Activity {
         if(mWlCameraView!=null){
             mWlCameraView.onDestory();
         }
+    }
+
+    @Override
+    public void onConfigurationChanged(@NonNull Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+
+        mWlCameraView.previewAngle(this);
     }
 }

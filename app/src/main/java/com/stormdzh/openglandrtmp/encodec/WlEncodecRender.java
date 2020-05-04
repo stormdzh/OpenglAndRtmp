@@ -1,16 +1,17 @@
-package com.stormdzh.openglandrtmp.camera.camera;
+package com.stormdzh.openglandrtmp.encodec;
 
 import android.content.Context;
 import android.opengl.GLES20;
 
 import com.stormdzh.openglandrtmp.R;
+import com.stormdzh.openglandrtmp.camera.egl.WLEGLSurfaceView;
 import com.stormdzh.openglandrtmp.camera.egl.WlShaderUtil;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 
-public class WlCameraFboRender {
+public class WlEncodecRender implements WLEGLSurfaceView.WlGLRender{
 
     private Context context;
 
@@ -34,12 +35,12 @@ public class WlCameraFboRender {
     private int vPosition;
     private int fPosition;
     private int textureid;
-    private int sampler;
 
     private int vboId;
 
-    public WlCameraFboRender(Context context) {
+    public WlEncodecRender(Context context, int textureid) {
         this.context = context;
+        this.textureid = textureid;
 
         vertexBuffer = ByteBuffer.allocateDirect(vertexData.length * 4)
                 .order(ByteOrder.nativeOrder())
@@ -55,8 +56,8 @@ public class WlCameraFboRender {
 
     }
 
-    public void onCreate()
-    {
+    @Override
+    public void onSurfaceCreated() {
         String vertexSource = WlShaderUtil.getRawResource(context, R.raw.vertex_camera_shader);
         String fragmentSource = WlShaderUtil.getRawResource(context, R.raw.fragment_shader_screen);
 
@@ -64,7 +65,6 @@ public class WlCameraFboRender {
 
         vPosition = GLES20.glGetAttribLocation(program, "v_Position");
         fPosition = GLES20.glGetAttribLocation(program, "f_Position");
-        sampler = GLES20.glGetUniformLocation(program, "sTexture");
 
         int [] vbos = new int[1];
         GLES20.glGenBuffers(1, vbos, 0);
@@ -77,19 +77,19 @@ public class WlCameraFboRender {
         GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
     }
 
-    public void onChange(int width, int height)
-    {
+    @Override
+    public void onSurfaceChanged(int width, int height) {
         GLES20.glViewport(0, 0, width, height);
     }
 
-    public void onDraw(int textureId)
-    {
+    @Override
+    public void onDrawFrame() {
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
-        GLES20.glClearColor(0f,1f, 0f, 1f);
+        GLES20.glClearColor(1f,0f, 0f, 1f);
 
         GLES20.glUseProgram(program);
 
-        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureId);
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureid);
 
 
         GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, vboId);

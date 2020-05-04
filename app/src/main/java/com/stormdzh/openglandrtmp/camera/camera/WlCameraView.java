@@ -40,8 +40,9 @@ public class WlCameraView extends WLEGLSurfaceView {
 
         wlCameraRender.setOnSurfaceCreateListener(new WlCameraRender.OnSurfaceCreateListener() {
             @Override
-            public void onSurfaceCreate(SurfaceTexture surfaceTexture) {
+            public void onSurfaceCreate(SurfaceTexture surfaceTexture,int tid) {
                 wlCamera.initCamera(surfaceTexture, cameraId);
+                textureId = tid;
             }
 
         });
@@ -110,5 +111,12 @@ public class WlCameraView extends WLEGLSurfaceView {
                 }
                 break;
         }
+    }
+
+    private int textureId = -1;
+
+    public int getTextureId()
+    {
+        return textureId;
     }
 }

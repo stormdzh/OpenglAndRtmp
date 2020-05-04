@@ -3,10 +3,10 @@ package com.stormdzh.openglandrtmp.camera;
 import android.app.Activity;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import com.stormdzh.openglandrtmp.R;
 import com.stormdzh.openglandrtmp.camera.camera.WlCameraView;

@@ -1,6 +1,7 @@
 package com.stormdzh.openglandrtmp.camera.camera;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.opengl.GLES20;
 
 import com.stormdzh.openglandrtmp.R;
@@ -18,7 +19,12 @@ public class WlCameraFboRender {
             -1f, -1f,
             1f, -1f,
             -1f, 1f,
-            1f, 1f
+            1f, 1f,
+
+            0f, 0f,
+            0f, 0f,
+            0f, 0f,
+            0f, 0f
     };
     private FloatBuffer vertexBuffer;
 
@@ -38,8 +44,34 @@ public class WlCameraFboRender {
 
     private int vboId;
 
+    private Bitmap bitmap;
+
+    private int bitmapTextureid;
+
     public WlCameraFboRender(Context context) {
         this.context = context;
+
+
+
+        //添加水印
+        bitmap = WlShaderUtil.createTextImage("视频直播和推流：ywl5320", 50, "#ff0000", "#00000000", 0);
+
+
+        float r = 1.0f * bitmap.getWidth() / bitmap.getHeight();
+        float w = r * 0.1f;
+
+        vertexData[8] = 0.8f - w;
+        vertexData[9] = -0.8f;
+
+        vertexData[10] = 0.8f;
+        vertexData[11] = -0.8f;
+
+        vertexData[12] = 0.8f - w;
+        vertexData[13] = -0.7f;
+
+        vertexData[14] = 0.8f;
+        vertexData[15] = -0.7f;
+
 
         vertexBuffer = ByteBuffer.allocateDirect(vertexData.length * 4)
                 .order(ByteOrder.nativeOrder())
@@ -52,7 +84,6 @@ public class WlCameraFboRender {
                 .asFloatBuffer()
                 .put(fragmentData);
         fragmentBuffer.position(0);
-
     }
 
     public void onCreate()
@@ -75,6 +106,9 @@ public class WlCameraFboRender {
         GLES20.glBufferSubData(GLES20.GL_ARRAY_BUFFER, 0, vertexData.length * 4, vertexBuffer);
         GLES20.glBufferSubData(GLES20.GL_ARRAY_BUFFER, vertexData.length * 4, fragmentData.length * 4, fragmentBuffer);
         GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
+
+
+        bitmapTextureid = WlShaderUtil.loadBitmapTexture(bitmap);
     }
 
     public void onChange(int width, int height)
@@ -103,6 +137,22 @@ public class WlCameraFboRender {
                 vertexData.length * 4);
 
         GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4);
+
+
+
+        //bitmap
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, bitmapTextureid);
+
+        GLES20.glEnableVertexAttribArray(vPosition);
+        GLES20.glVertexAttribPointer(vPosition, 2, GLES20.GL_FLOAT, false, 8,
+                32);
+
+        GLES20.glEnableVertexAttribArray(fPosition);
+        GLES20.glVertexAttribPointer(fPosition, 2, GLES20.GL_FLOAT, false, 8,
+                vertexData.length * 4);
+
+        GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4);
+
 
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
         GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);

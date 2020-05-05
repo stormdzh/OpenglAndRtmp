@@ -38,6 +38,12 @@
         android:layout_width="match_parent"
         android:layout_height="40dp"
         android:text="图片和音频合成视频" />
+    <Button
+        android:layout_marginTop="10dp"
+        android:id="@+id/showYUV"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:text="渲染yuv数据" />
 
 
 </LinearLayout>

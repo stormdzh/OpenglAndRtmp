@@ -34,6 +34,10 @@
             android:name=".ImageVideoActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppThemeFullScreen" />
+        <activity
+            android:name=".YuvActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppThemeFullScreen" />
     </application>
 
 </manifest>

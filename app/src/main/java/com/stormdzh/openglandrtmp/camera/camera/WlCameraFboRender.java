@@ -21,6 +21,7 @@ public class WlCameraFboRender {
             -1f, 1f,
             1f, 1f,
 
+            //添加水印
             0f, 0f,
             0f, 0f,
             0f, 0f,

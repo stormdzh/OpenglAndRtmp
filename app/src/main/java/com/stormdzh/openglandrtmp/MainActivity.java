@@ -51,6 +51,12 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(new Intent(MainActivity.this, VideoActivity.class));
             }
         });
+        findViewById(R.id.imageToVideo).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(MainActivity.this, ImageVideoActivity.class));
+            }
+        });
 
     }
 

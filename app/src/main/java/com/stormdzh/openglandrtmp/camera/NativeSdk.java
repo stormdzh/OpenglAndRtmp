@@ -13,4 +13,11 @@ public class NativeSdk {
 
     //测试获取字符串
     public native String stringFromJni();
+
+
+    public native void startRecord(String path);
+
+    public native void stopRecord();
+
+
 }

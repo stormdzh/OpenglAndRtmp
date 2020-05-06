@@ -12,6 +12,7 @@ import android.view.View;
 
 import com.stormdzh.openglandrtmp.camera.CameraActivity;
 import com.stormdzh.openglandrtmp.testaudiorecord.TestAudioRecordActivity;
+import com.stormdzh.openglandrtmp.testslesrecord.SLESRecordActivity;
 
 import java.util.ArrayList;
 
@@ -68,6 +69,12 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 startActivity(new Intent(MainActivity.this, TestAudioRecordActivity.class));
+            }
+        });
+        findViewById(R.id.slesRecord).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(MainActivity.this, SLESRecordActivity.class));
             }
         });
 

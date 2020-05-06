@@ -52,5 +52,12 @@
         android:layout_height="40dp"
         android:text="测试audioRecord" />
 
+    <Button
+        android:layout_marginTop="10dp"
+        android:id="@+id/slesRecord"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:text="测试 SLES-Record" />
+
 
 </LinearLayout>

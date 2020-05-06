@@ -43,6 +43,10 @@
             android:name=".testaudiorecord.TestAudioRecordActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppThemeFullScreen" />
+        <activity
+            android:name=".testslesrecord.SLESRecordActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppThemeFullScreen" />
     </application>
 
 </manifest>

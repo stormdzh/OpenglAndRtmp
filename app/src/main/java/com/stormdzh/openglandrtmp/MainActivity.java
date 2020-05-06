@@ -11,6 +11,7 @@ import android.view.View;
 
 
 import com.stormdzh.openglandrtmp.camera.CameraActivity;
+import com.stormdzh.openglandrtmp.testaudiorecord.TestAudioRecordActivity;
 
 import java.util.ArrayList;
 
@@ -61,6 +62,12 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 startActivity(new Intent(MainActivity.this, YuvActivity.class));
+            }
+        });
+        findViewById(R.id.audioRecord).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(MainActivity.this, TestAudioRecordActivity.class));
             }
         });
 
@@ -133,6 +140,10 @@ public class MainActivity extends AppCompatActivity {
         per = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE);
         if (per != PackageManager.PERMISSION_GRANTED) {
             ps.add(Manifest.permission.READ_PHONE_STATE);
+        }
+        per = ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO);
+        if (per != PackageManager.PERMISSION_GRANTED) {
+            ps.add(Manifest.permission.RECORD_AUDIO);
         }
         if (!ps.isEmpty()) {
             String[] ps3 = new String[ps.size()];

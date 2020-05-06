@@ -6,6 +6,7 @@
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
 
     <application
         android:icon="@mipmap/ic_launcher"
@@ -36,6 +37,10 @@
             android:theme="@style/AppThemeFullScreen" />
         <activity
             android:name=".YuvActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppThemeFullScreen" />
+        <activity
+            android:name=".testaudiorecord.TestAudioRecordActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppThemeFullScreen" />
     </application>

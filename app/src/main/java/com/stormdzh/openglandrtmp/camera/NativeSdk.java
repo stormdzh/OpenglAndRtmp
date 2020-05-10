@@ -57,4 +57,19 @@ public class NativeSdk {
     }
 
 
+    public void pushSPSPPS(byte[] sps,byte[] pps){
+        if(sps!=null&&pps!=null){
+            pushSPSPPS(sps,sps.length,pps,pps.length);
+        }
+    }
+
+
+    private native void pushSPSPPS(byte[] sps,int sps_len,byte[] pps,int pps_len);
+
+
+    private native void pushVideoData(byte[] data,int data_len,boolean keyframe);
+
+    public void pushVideoData(byte[] data,boolean keyframe){
+        pushVideoData(data,data.length,keyframe);
+    }
 }

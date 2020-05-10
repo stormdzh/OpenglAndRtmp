@@ -47,6 +47,8 @@ public abstract class WlBasePushEncoder {
 
     private OnMediaInfoListener onMediaInfoListener;
 
+    public static boolean keyFreme=false; //是否是关键帧
+
 
     public WlBasePushEncoder(Context context) {
     }
@@ -338,6 +340,7 @@ public abstract class WlBasePushEncoder {
                     break;
                 }
 
+                keyFreme=false;
                 int outputBufferIndex = videoEncodec.dequeueOutputBuffer(videoBufferinfo, 0);
 
                 if(outputBufferIndex == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED)
@@ -375,7 +378,21 @@ public abstract class WlBasePushEncoder {
                         outputBuffer.get(data, 0, data.length);
                         Log.d("ywl5320", "data:" + byteToHex(data));
 
+                        //关键帧
+                        if(videoBufferinfo.flags==MediaCodec.BUFFER_FLAG_KEY_FRAME){
+                            keyFreme=true;
+                            if(encoder.get().onMediaInfoListener!=null){
+                                //返回sps和pps
+                                encoder.get().onMediaInfoListener.onSpsPpsInfo(sps,pps);
+                            }
+                        }
 
+                        //返回视频数据
+                        if(encoder.get().onMediaInfoListener!=null){
+                            encoder.get().onMediaInfoListener.onVideoInfo(data,keyFreme);
+                        }
+
+                        //返回时间数据
                         if(encoder.get().onMediaInfoListener != null)
                         {
                             encoder.get().onMediaInfoListener.onMediaTime((int) (videoBufferinfo.presentationTimeUs / 1000000));
@@ -464,6 +481,10 @@ public abstract class WlBasePushEncoder {
     public interface OnMediaInfoListener
     {
         void onMediaTime(int times);
+
+        void onSpsPpsInfo(byte []sps,byte[] pps);
+
+        void onVideoInfo(byte []data,boolean keyframe);
     }
 
     private long getAudioPts(int size, int sampleRate)

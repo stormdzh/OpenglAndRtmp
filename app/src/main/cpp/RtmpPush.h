@@ -25,11 +25,18 @@ public:
     pthread_t push_thread;
 
     WlCallJava *callJava=NULL;
+
+    bool startPushing=false; //是否在推流
+    long startTime =0;
 public:
     RtmpPush(const char *url,WlCallJava *callJava);
     ~RtmpPush();
 
     void init();
+
+    void psuSPSPPS(char *sps,int sps_len,char *pps,int pps_len);
+
+    void pushVideoData(char *data, int data_len, bool keyframe);
 
 
 

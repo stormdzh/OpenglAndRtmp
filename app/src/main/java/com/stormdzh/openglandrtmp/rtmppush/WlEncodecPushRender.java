@@ -89,7 +89,7 @@ public class WlEncodecPushRender implements WLEGLSurfaceView.WlGLRender{
         GLES20.glEnable (GLES20.GL_BLEND);
         GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
 
-        String vertexSource = WlShaderUtil.getRawResource(context, R.raw.vertex_shader_screen);
+        String vertexSource = WlShaderUtil.getRawResource(context, R.raw.vertex_camera_shader);
         String fragmentSource = WlShaderUtil.getRawResource(context, R.raw.fragment_shader_screen);
 
         program = WlShaderUtil.createProgram(vertexSource, fragmentSource);

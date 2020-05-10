@@ -170,3 +170,39 @@ extern "C"
 JNIEXPORT void JNICALL JNI_OnUnload(JavaVM* vm, void* reserved){
     javaVM = NULL;
 }
+
+
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_stormdzh_openglandrtmp_camera_NativeSdk_pushSPSPPS(JNIEnv *env, jobject thiz,
+                                                            jbyteArray sps_, jint sps_len,
+                                                            jbyteArray pps_, jint pps_len
+                                                            ) {
+
+    jbyte *sps = env->GetByteArrayElements(sps_,NULL);
+    jbyte *pps = env->GetByteArrayElements(pps_,NULL);
+
+    if(rtmpPush!=NULL){
+        rtmpPush->psuSPSPPS(reinterpret_cast<char *>(sps), sps_len, reinterpret_cast<char *>(pps), pps_len);
+    }
+
+    env->ReleaseByteArrayElements(sps_,sps,0);
+    env->ReleaseByteArrayElements(pps_,pps,0);
+
+}
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_stormdzh_openglandrtmp_camera_NativeSdk_pushVideoData(JNIEnv *env, jobject thiz,
+                                                               jbyteArray data_, jint data_len,jboolean keyframe) {
+    // TODO: implement pushVideoData()
+
+    jbyte *data = env->GetByteArrayElements(data_,NULL);
+
+    if(rtmpPush!=NULL){
+        rtmpPush->pushVideoData(reinterpret_cast<char *>(data), data_len, keyframe);
+    }
+
+    env->ReleaseByteArrayElements(data_,data,0);
+}

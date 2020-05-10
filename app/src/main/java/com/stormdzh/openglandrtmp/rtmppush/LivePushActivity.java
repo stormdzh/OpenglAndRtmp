@@ -29,15 +29,39 @@ public class LivePushActivity extends AppCompatActivity{
         mNativeSdk.setOnRtmpLisetner(new OnRtmpLisetner() {
             @Override
             public void onConnecting() {
-                Log.d("ywl5320", "链接服务器成功，可以开始推流了");
-                wlPushEncodec = new WlPushEncodec(LivePushActivity.this, mCameraView.getTextureId());
-                wlPushEncodec.initEncodec(mCameraView.getEglContext(), 720, 1280, 44100, 2);
-                wlPushEncodec.startRecord();
+                Log.d("ywl5320", "链接服务器中..");
             }
 
             @Override
             public void onConnectSuccess() {
 
+                Log.d("ywl5320", "链接服务器成功，可以开始推流了");
+                wlPushEncodec = new WlPushEncodec(LivePushActivity.this, mCameraView.getTextureId());
+                wlPushEncodec.initEncodec(mCameraView.getEglContext(), 720/2, 1280/2, 44100, 2);
+                wlPushEncodec.startRecord();
+
+                wlPushEncodec.setOnMediaInfoListener(new WlBasePushEncoder.OnMediaInfoListener() {
+                    @Override
+                    public void onMediaTime(int times) {
+
+                    }
+
+                    @Override
+                    public void onSpsPpsInfo(byte[] sps, byte[] pps) {
+
+                        if(mNativeSdk!=null){
+                            mNativeSdk.pushSPSPPS(sps,pps);
+                        }
+                    }
+
+                    @Override
+                    public void onVideoInfo(byte[] data, boolean keyframe) {
+                        if(mNativeSdk!=null){
+                            mNativeSdk.pushVideoData(data,keyframe);
+                        }
+
+                    }
+                });
             }
 
             @Override
@@ -51,8 +75,8 @@ public class LivePushActivity extends AppCompatActivity{
     public void startpush(View view) {
         start=!start;
         if(start) {
-            mNativeSdk.initPush("rtmp://192.168.124.5:1935/rtmplive/room");
-//        mNativeSdk.initPush("rtmp://192.168.124.5/rtmplive/room");
+//            mNativeSdk.initPush("rtmp://192.168.124.5:1935/rtmplive/room");
+        mNativeSdk.initPush("rtmp://192.168.124.5/rtmplive/room");
         }else{
             if(wlPushEncodec != null)
             {

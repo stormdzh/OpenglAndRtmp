@@ -9,8 +9,8 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
-
 import com.stormdzh.openglandrtmp.camera.CameraActivity;
+import com.stormdzh.openglandrtmp.rtmppush.LivePushActivity;
 import com.stormdzh.openglandrtmp.testaudiorecord.TestAudioRecordActivity;
 import com.stormdzh.openglandrtmp.testslesrecord.SLESRecordActivity;
 
@@ -75,6 +75,13 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 startActivity(new Intent(MainActivity.this, SLESRecordActivity.class));
+            }
+        });
+        findViewById(R.id.testRtmp).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(MainActivity.this, LivePushActivity.class));
+
             }
         });
 
@@ -151,6 +158,10 @@ public class MainActivity extends AppCompatActivity {
         per = ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO);
         if (per != PackageManager.PERMISSION_GRANTED) {
             ps.add(Manifest.permission.RECORD_AUDIO);
+        }
+        per = ContextCompat.checkSelfPermission(this, Manifest.permission.INTERNET);
+        if (per != PackageManager.PERMISSION_GRANTED) {
+            ps.add(Manifest.permission.INTERNET);
         }
         if (!ps.isEmpty()) {
             String[] ps3 = new String[ps.size()];

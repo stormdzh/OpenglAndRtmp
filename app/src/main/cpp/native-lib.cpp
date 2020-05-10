@@ -131,3 +131,18 @@ Java_com_stormdzh_openglandrtmp_camera_NativeSdk_stopRecord(JNIEnv *env, jobject
 
 }
 
+#include "RtmpPush.h"
+RtmpPush * rtmpPush = NULL;
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_stormdzh_openglandrtmp_camera_NativeSdk_initPush(JNIEnv *env, jobject thiz,
+                                                          jstring push_url) {
+    // TODO: implement initPush()
+
+    const char *pushUrl = env->GetStringUTFChars(push_url, 0);
+    rtmpPush = new RtmpPush(pushUrl);
+    rtmpPush->init();
+
+    env->ReleaseStringUTFChars(push_url, pushUrl);
+}

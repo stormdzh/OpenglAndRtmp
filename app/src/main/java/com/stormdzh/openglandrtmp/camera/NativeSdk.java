@@ -20,4 +20,7 @@ public class NativeSdk {
     public native void stopRecord();
 
 
+    public native void initPush(String pushUrl);
+
+
 }

@@ -22,6 +22,7 @@ add_library( # Sets the name of the library.
 
         src/main/cpp/WlQueue.cpp
         src/main/cpp/RtmpPush.cpp
+        src/main/cpp/WlCallJava.cpp
 
 
         )

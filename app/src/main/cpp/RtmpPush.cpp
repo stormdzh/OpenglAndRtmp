@@ -6,7 +6,8 @@
 
 #include "RtmpPush.h"
 
-RtmpPush::RtmpPush(const char *url) {
+RtmpPush::RtmpPush(const char *url,WlCallJava *callJava) {
+    this->callJava=callJava;
     this->url = static_cast<char *>(malloc(512));
     strcpy(this->url, url);
     this->queue = new WlQueue();
@@ -22,6 +23,8 @@ void *callBackPush(void *data)
 {
     RtmpPush *rtmpPush = static_cast<RtmpPush *>(data);
 
+    rtmpPush->callJava->onConnectint(WL_THREAD_CHILD);
+
     rtmpPush->rtmp = RTMP_Alloc();
     RTMP_Init(rtmpPush->rtmp);
     rtmpPush->rtmp->Link.timeout = 10;
@@ -32,16 +35,19 @@ void *callBackPush(void *data)
     if(!RTMP_Connect(rtmpPush->rtmp, NULL))
     {
         LOGE("can not connect the url");
+        rtmpPush->callJava->onConnectFail(strerror(RTMP_Connect(rtmpPush->rtmp, NULL)));
         goto end;
     }
 
     if(!RTMP_ConnectStream(rtmpPush->rtmp, 0))
     {
         LOGE("can not connect the stream of service:%s",strerror(RTMP_ConnectStream(rtmpPush->rtmp, 0)));
+        rtmpPush->callJava->onConnectFail(strerror(RTMP_ConnectStream(rtmpPush->rtmp, 0)));
         goto end;
     }
 
     LOGD("链接成功， 开始推流");
+    rtmpPush->callJava->onConnectsuccess();
 
 //    while(true)
 //    {}

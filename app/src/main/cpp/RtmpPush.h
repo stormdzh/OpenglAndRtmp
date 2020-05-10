@@ -9,6 +9,7 @@
 #include <string.h>
 #include "WlQueue.h"
 #include "pthread.h"
+#include "WlCallJava.h"
 
 extern "C"
 {
@@ -22,8 +23,10 @@ public:
     char *url = NULL;
     WlQueue *queue = NULL;
     pthread_t push_thread;
+
+    WlCallJava *callJava=NULL;
 public:
-    RtmpPush(const char *url);
+    RtmpPush(const char *url,WlCallJava *callJava);
     ~RtmpPush();
 
     void init();

@@ -132,7 +132,11 @@ Java_com_stormdzh_openglandrtmp_camera_NativeSdk_stopRecord(JNIEnv *env, jobject
 }
 
 #include "RtmpPush.h"
+#include "WlCallJava.h"
 RtmpPush * rtmpPush = NULL;
+JavaVM *javaVM;
+WlCallJava *wlCallJava=NULL;
+
 
 extern "C"
 JNIEXPORT void JNICALL
@@ -141,8 +145,28 @@ Java_com_stormdzh_openglandrtmp_camera_NativeSdk_initPush(JNIEnv *env, jobject t
     // TODO: implement initPush()
 
     const char *pushUrl = env->GetStringUTFChars(push_url, 0);
-    rtmpPush = new RtmpPush(pushUrl);
+    wlCallJava=new WlCallJava(javaVM,env,&thiz);
+    rtmpPush = new RtmpPush(pushUrl,wlCallJava);
     rtmpPush->init();
 
     env->ReleaseStringUTFChars(push_url, pushUrl);
+}
+
+
+extern "C"
+JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *reserved)
+{
+    javaVM = vm;
+    JNIEnv* env;
+    if (vm->GetEnv((void**)&env, JNI_VERSION_1_4) != JNI_OK)
+    {
+            LOGE("GetEnv failed!");
+        return -1;
+    }
+    return JNI_VERSION_1_4;
+}
+
+extern "C"
+JNIEXPORT void JNICALL JNI_OnUnload(JavaVM* vm, void* reserved){
+    javaVM = NULL;
 }

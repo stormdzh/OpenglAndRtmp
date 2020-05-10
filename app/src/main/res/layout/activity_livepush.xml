@@ -1,8 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
+
+    <com.stormdzh.openglandrtmp.camera.camera.WlCameraView
+        android:id="@+id/mCameraView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
 
     <Button
         android:layout_width="match_parent"
@@ -10,4 +15,4 @@
         android:layout_marginTop="20dp"
         android:onClick="startpush"
         android:text="startpush" />
-</LinearLayout>
+</RelativeLayout>

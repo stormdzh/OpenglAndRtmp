@@ -2,6 +2,8 @@ package com.stormdzh.openglandrtmp.camera;
 
 import android.util.Log;
 
+import com.stormdzh.openglandrtmp.rtmppush.OnRtmpLisetner;
+
 /**
  * @Description: 描述
  * @Author: dzh
@@ -29,14 +31,29 @@ public class NativeSdk {
 
     private void onConnecting() {
         Log.i(TAG, "onConnecting");
+        if(mOnRtmpLisetner!=null){
+            mOnRtmpLisetner.onConnecting();
+        }
     }
 
     private void onConnectSuccess() {
         Log.i(TAG, "onConnectSuccess");
+        if(mOnRtmpLisetner!=null){
+            mOnRtmpLisetner.onConnectSuccess();
+        }
     }
 
     private void onConnectFial(String msg) {
         Log.i(TAG, "onConnectFial msg:" + msg);
+        if(mOnRtmpLisetner!=null){
+            mOnRtmpLisetner.onConnectFial(msg);
+        }
+    }
+
+    private OnRtmpLisetner mOnRtmpLisetner;
+
+    public void setOnRtmpLisetner(OnRtmpLisetner lisetner){
+        this.mOnRtmpLisetner=lisetner;
     }
 
 
